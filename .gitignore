@@ -5,6 +5,7 @@
 # Ignore object files and dependent files
 .o
 .d
+.idea
 
 #Ignore logs folder and log files
 /logs
