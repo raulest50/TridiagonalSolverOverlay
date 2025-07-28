@@ -31,3 +31,10 @@ Tridiagonal_Solver/
 
 # Test binaries and generated data
 test/tb
+
+
+# Additional Vitis HLS generated files
+/.cache/
+*.hlsrun_csim_summary
+dfx_runtime.txt
+/hls/

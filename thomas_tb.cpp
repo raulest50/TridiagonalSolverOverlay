@@ -47,10 +47,10 @@ static std::vector<std::complex<float>> ref_solver(
 
 int main() {
     std::vector<complex_t> A, B, C, D;
-    read_vec("test/a.dat", A);
-    read_vec("test/b.dat", B);
-    read_vec("test/c.dat", C);
-    read_vec("test/d.dat", D);
+    read_vec("./a.dat", A);
+    read_vec("./b.dat", B);
+    read_vec("./c.dat", C);
+    read_vec("./d.dat", D);
     assert(A.size()==N && B.size()==N && C.size()==N && D.size()==N);
 
     // Run HLS function
@@ -79,6 +79,6 @@ int main() {
     std::vector<complex_t> ref_out(N);
     for(int i=0;i<N;i++)
         ref_out[i] = complex_t(data_t(ref[i].real()), data_t(ref[i].imag()));
-    write_vec("test/golden.dat", ref_out);
+    write_vec("./golden.dat", ref_out);
     return 0;
 }
