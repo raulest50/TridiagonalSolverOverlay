@@ -1,0 +1,13 @@
+{
+  "name": "Tridiagonal_Solver",
+  "type": "HLS",
+  "configuration": {
+    "componentType": "HLS",
+    "configFiles": [
+      "hls_config.cfg"
+    ],
+    "work_dir": "Tridiagonal_Solver"
+  },
+  "useSysrootToolchain": false,
+  "template": "empty_hls_component"
+}
