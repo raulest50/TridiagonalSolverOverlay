@@ -20,3 +20,14 @@
 
 _ide/logs
 _ide/.wsdata
+# Vitis HLS component build directories
+Tridiagonal_Solver/
+*.jou
+*.log
+*.pb
+*.rpt
+*.svf
+*.xo
+
+# Test binaries and generated data
+test/tb
