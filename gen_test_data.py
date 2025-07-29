@@ -1,35 +1,35 @@
 import numpy as np
+
 N = 64
 np.random.seed(0)
-# random diagonals with non-zero main diag
-b = np.random.randn(N) + 1j*np.random.randn(N) + 5
-c = np.random.randn(N) + 1j*np.random.randn(N)
-a = np.random.randn(N) + 1j*np.random.randn(N)
-# ensure first a[0], last c[N-1] not used
-c[-1] = 0
-a[0] = 0
-# RHS
-d = np.random.randn(N) + 1j*np.random.randn(N)
 
-# solve using numpy's linear solver
-A = np.zeros((N,N),dtype=np.complex64)
-for i in range(N):
-    A[i,i] = b[i]
-    if i>0:
-        A[i,i-1] = a[i]
-    if i<N-1:
-        A[i,i+1] = c[i]
+# Constant diagonals
+dp  = np.complex64(5 + 0.5j)
+dp1 = np.complex64(5.5 + 0.5j)
+dp2 = np.complex64(4.5 + 0.5j)
+do  = np.complex64(1 - 0.2j)
 
-x = np.linalg.solve(A,d)
+# Right hand side vector
+b = (np.random.randn(N) + 1j*np.random.randn(N)).astype(np.complex64)
 
-def save(fname, arr):
-    with open(fname,'w') as f:
+# Build matrix and solve for reference
+A = np.zeros((N, N), dtype=np.complex64)
+A[0,0] = dp1
+A[-1,-1] = dp2
+for i in range(1, N-1):
+    A[i,i] = dp
+for i in range(N-1):
+    A[i+1,i] = do
+    A[i,i+1] = do
+
+x = np.linalg.solve(A, b)
+
+def save_vector(fname, arr):
+    with open(fname, 'w') as f:
         for v in arr:
             f.write(f"{v.real} {v.imag}\n")
 
-save('test/a.dat', a)
-save('test/b.dat', b)
-save('test/c.dat', c)
-save('test/d.dat', d)
-save('test/golden.dat', x)
+save_vector('b.dat', b)
+save_vector('golden.dat', x)
+
 print('data generated')

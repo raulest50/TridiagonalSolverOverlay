@@ -24,48 +24,58 @@ static void write_vec(const char* fn, const std::vector<complex_t>& v) {
 
 // CPU reference using std::complex<float>
 static std::vector<std::complex<float>> ref_solver(
-        const std::vector<std::complex<float>>& a,
-        const std::vector<std::complex<float>>& b,
-        const std::vector<std::complex<float>>& c,
-        const std::vector<std::complex<float>>& d) {
-    int n = d.size();
+        std::complex<float> dp,
+        std::complex<float> dp1,
+        std::complex<float> dp2,
+        std::complex<float> off,
+        const std::vector<std::complex<float>>& b) {
+    int n = b.size();
     std::vector<std::complex<float>> cprime(n);
     std::vector<std::complex<float>> dprime(n);
     std::vector<std::complex<float>> x(n);
-    cprime[0] = c[0] / b[0];
-    dprime[0] = d[0] / b[0];
-    for (int i=1;i<n;i++) {
-        std::complex<float> denom = b[i] - a[i]*cprime[i-1];
-        cprime[i] = c[i]/denom;
-        dprime[i] = (d[i]-a[i]*dprime[i-1])/denom;
+
+    cprime[0] = off / dp1;
+    dprime[0] = b[0] / dp1;
+    for (int i=1;i<n-1;i++) {
+        std::complex<float> denom = dp - off*cprime[i-1];
+        cprime[i] = off/denom;
+        dprime[i] = (b[i]-off*dprime[i-1])/denom;
     }
+    dprime[n-1] = (b[n-1] - off*dprime[n-2]) /
+                  (dp2 - off*cprime[n-2]);
+
     x[n-1]=dprime[n-1];
-    for(int i=n-2;i>=0;i--)
+    for(int i=n-2;i>=0;i--) {
         x[i]=dprime[i]-cprime[i]*x[i+1];
+    }
     return x;
 }
 
 int main() {
-    std::vector<complex_t> A, B, C, D;
-    read_vec("./a.dat", A);
+    // Constant tridiagonal coefficients
+    complex_t dp  = complex_t(5.0f, 0.5f);
+    complex_t dp1 = complex_t(5.5f, 0.5f);
+    complex_t dp2 = complex_t(4.5f, 0.5f);
+    complex_t off = complex_t(1.0f, -0.2f);
+    std::vector<complex_t> B;
     read_vec("./b.dat", B);
-    read_vec("./c.dat", C);
-    read_vec("./d.dat", D);
-    assert(A.size()==N && B.size()==N && C.size()==N && D.size()==N);
+    assert(B.size()==N);
 
     // Run HLS function
     std::vector<complex_t> X(N);
-    thomas_solver(A.data(), B.data(), C.data(), D.data(), X.data());
+    thomas_solver(dp, dp1, dp2, off, B.data(), X.data());
 
     // Compute reference on CPU for comparison
-    std::vector<std::complex<float>> a_f(N), b_f(N), c_f(N), d_f(N);
+    std::vector<std::complex<float>> b_f(N);
     for(int i=0;i<N;i++) {
-        a_f[i] = std::complex<float>(float(A[i].real()), float(A[i].imag()));
         b_f[i] = std::complex<float>(float(B[i].real()), float(B[i].imag()));
-        c_f[i] = std::complex<float>(float(C[i].real()), float(C[i].imag()));
-        d_f[i] = std::complex<float>(float(D[i].real()), float(D[i].imag()));
     }
-    auto ref = ref_solver(a_f,b_f,c_f,d_f);
+    auto ref = ref_solver(
+            std::complex<float>(float(dp.real()), float(dp.imag())),
+            std::complex<float>(float(dp1.real()), float(dp1.imag())),
+            std::complex<float>(float(dp2.real()), float(dp2.imag())),
+            std::complex<float>(float(off.real()), float(off.imag())),
+            b_f);
 
     double err=0.0;
     for(int i=0;i<N;i++) {
