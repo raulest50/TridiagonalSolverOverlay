@@ -38,3 +38,9 @@ test/tb
 *.hlsrun_csim_summary
 dfx_runtime.txt
 /hls/
+
+# HLS compilation summary files
+*.hlscompile_summary
+
+# Generated reports directory
+/reports/
