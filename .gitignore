@@ -44,3 +44,5 @@ dfx_runtime.txt
 
 # Generated reports directory
 /reports/
+
+Tridiagonal_Solver.hlsrun_package_summary
